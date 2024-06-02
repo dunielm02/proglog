@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package log.v1;
+package api;
 
 option go_package = "github.com/dunielm02/api/log_v1";
 

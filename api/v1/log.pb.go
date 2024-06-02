@@ -4,7 +4,7 @@
 // 	protoc        v5.27.0
 // source: api/v1/log.proto
 
-package log_v1
+package api
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
