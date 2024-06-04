@@ -43,7 +43,8 @@ func TestIndex(t *testing.T) {
 
 	_, _, err = index.Read(int64(len(entries)))
 	require.Equal(t, io.EOF, err)
-	_ = index.Close()
+	err = index.Close()
+	require.NoError(t, err)
 
 	f, _ = os.OpenFile(f.Name(), os.O_RDWR, 0600)
 	index, err = newIndex(f, c)

@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/tysonmote/gommap"
+	mmap "github.com/edsrzf/mmap-go"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 
 type index struct {
 	file *os.File
-	mmap gommap.MMap
+	mmap mmap.MMap
 	size uint64
 }
 
@@ -36,10 +36,10 @@ func newIndex(f *os.File, c Config) (*index, error) {
 		return nil, err
 	}
 
-	if idx.mmap, err = gommap.Map(
-		idx.file.Fd(),
-		gommap.PROT_READ|gommap.PROT_WRITE,
-		gommap.MAP_SHARED,
+	if idx.mmap, err = mmap.Map(
+		idx.file,
+		mmap.RDWR,
+		0,
 	); err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func newIndex(f *os.File, c Config) (*index, error) {
 }
 
 func (i *index) Close() error {
-	if err := i.mmap.Sync(gommap.MS_SYNC); err != nil {
+	if err := i.mmap.Unmap(); err != nil {
 		return err
 	}
 	if err := i.file.Sync(); err != nil {
