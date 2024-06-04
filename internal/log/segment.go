@@ -125,6 +125,6 @@ func (s *segment) Close() error {
 	return nil
 }
 
-func nearestMultiple(j, k uint64) uint64 {
-	return (j / k) * k
-}
+// func nearestMultiple(j, k uint64) uint64 {
+// 	return (j / k) * k
+// }
