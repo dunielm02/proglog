@@ -28,6 +28,7 @@ func SetupTLSConfig(cfg TLSConfig) (*tls.Config, error) {
 			return nil, err
 		}
 	}
+
 	if cfg.CAFile != "" {
 		b, err := os.ReadFile(cfg.CAFile)
 		if err != nil {
@@ -49,5 +50,6 @@ func SetupTLSConfig(cfg TLSConfig) (*tls.Config, error) {
 		}
 		tlsConfig.ServerName = cfg.ServerAddress
 	}
+
 	return tlsConfig, nil
 }
