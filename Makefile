@@ -3,7 +3,7 @@ CONFIG_PATH=${HOME}/.proglog/
 
 .PHONY: init
 init:
-	mkdir ${CONFIG_PATH}
+	mkdir -p ${CONFIG_PATH}
 
 .PHONY: gencert
 gencert:
