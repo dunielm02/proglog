@@ -17,9 +17,10 @@ import (
 )
 
 type DistributedLog struct {
-	config Config
-	log    *Log
-	raft   *raft.Raft
+	config   Config
+	log      *Log
+	logStore *logStore
+	raft     *raft.Raft
 }
 
 func NewDistributedLog(dataDir string, config Config) (
@@ -56,9 +57,10 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 		return err
 	}
 
+	var err error
 	logConfig := l.config
 	logConfig.Segment.InitialOffset = 1
-	logStore, err := newLogStore(logDir, logConfig)
+	l.logStore, err = newLogStore(logDir, logConfig)
 	if err != nil {
 		return err
 	}
@@ -107,7 +109,7 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 	l.raft, err = raft.NewRaft(
 		config,
 		fsm,
-		logStore,
+		l.logStore,
 		stableStore,
 		snapshotStore,
 		transport,
@@ -116,7 +118,7 @@ func (l *DistributedLog) setupRaft(dataDir string) error {
 		return err
 	}
 	hasState, err := raft.HasExistingState(
-		logStore,
+		l.logStore,
 		stableStore,
 		snapshotStore,
 	)
@@ -438,5 +440,12 @@ func (l *DistributedLog) Close() error {
 	if err := f.Error(); err != nil {
 		return err
 	}
+
+	err := l.logStore.Close()
+
+	if err != nil {
+		return err
+	}
+
 	return l.log.Close()
 }
