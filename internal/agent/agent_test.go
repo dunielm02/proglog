@@ -11,6 +11,7 @@ import (
 	"github.com/dunielm02/proglog/api/v1"
 	"github.com/dunielm02/proglog/internal/agent"
 	"github.com/dunielm02/proglog/internal/config"
+	"github.com/dunielm02/proglog/internal/loadbalance"
 
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport"
@@ -87,6 +88,9 @@ func TestAgent(t *testing.T) {
 			},
 		},
 	)
+
+	time.Sleep(3 * time.Second)
+
 	require.NoError(t, err)
 	consumeResponse, err := leaderClient.Consume(
 		context.Background(),
@@ -131,7 +135,11 @@ func client(
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(tlsCreds)}
 	rpcAddr, err := agent.Config.RPCAddr()
 	require.NoError(t, err)
-	conn, err := grpc.NewClient(rpcAddr, opts...)
+	conn, err := grpc.NewClient(fmt.Sprintf(
+		"%s:///%s",
+		loadbalance.Name,
+		rpcAddr,
+	), opts...)
 	require.NoError(t, err)
 	client := api.NewLogClient(conn)
 	return client
