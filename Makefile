@@ -45,3 +45,6 @@ compile:
 TAG ?= 0.0.1
 build-docker:
 	docker build -t github.com/dunielm02/proglog:$(TAG) .
+	helm delete proglog
+	kubectl delete pvc --all
+	helm install proglog deploy/proglog
